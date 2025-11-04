@@ -1,6 +1,7 @@
 # Topic 02 - Docker image and registry
 
-## 1. Create single state dockerfile & build image
+## I. Single stage image build
+### 1. Create single state dockerfile & build image
 Prepare directory and sample source code
 ```
 mkdir single_stage_build
@@ -20,7 +21,7 @@ func main() {
 }
 EOF
 ```
-Create `Dockerfile`
+### 2. Create `Dockerfile`
 ```
 FROM golang:1.22-alpine
 WORKDIR /app
@@ -30,11 +31,11 @@ RUN go build -o server .
 EXPOSE 8080
 ENTRYPOINT ["./server"]
 ```
-Build docker image
+### 3. Build docker image
 ```
 sudo docker build -t goapp-single:1.0 .
 ```
-Check docker image
+### 4. Check docker image
 ```
 sudo docker image ls
 ```
@@ -43,11 +44,11 @@ sudo docker image ls
 REPOSITORY             TAG       IMAGE ID       CREATED          SIZE
 goapp-single           1.0       0a65c856a6e7   58 seconds ago   303MB
 ```
-Run app
+### 5. Run container app
 ```
 sudo docker run -d -p 18080:8080 --name goapp-single goapp-single:1.0
 ```
-Check for running container and try to send request to container
+### 6. Check for running container and try to send request to container
 ```
 sudo docker ps
 curl http://localhost:18080
@@ -61,8 +62,8 @@ CONTAINER ID   IMAGE              COMMAND                  CREATED          STAT
 
 Hello from Docker single stage build!
 ```
-
-## 2. Create single state dockerfile & build image
+## II. Multi stage container build
+### 1. Create single state dockerfile & build image
 Prepare directory and sample source code
 ```
 mkdir multi_stage_build
@@ -82,7 +83,7 @@ func main() {
 }
 EOF
 ```
-Create `Dockerfile`
+### 2.Create `Dockerfile`
 ```
 # Stage 1: build
 FROM golang:1.22-alpine AS builder
@@ -98,11 +99,11 @@ COPY --from=builder /app/server .
 EXPOSE 8080
 ENTRYPOINT ["./server"]
 ```
-Build docker image
+### 3. Build docker image
 ```
 sudo docker build -t goapp-multi:1.0 .
 ```
-Check docker image
+### 4. Check docker image
 ```
 sudo docker image ls
 ```
@@ -111,11 +112,11 @@ sudo docker image ls
 REPOSITORY             TAG       IMAGE ID       CREATED          SIZE
 goapp-multi            1.0       ebe73e2f9283   2 seconds ago    14.8MB
 ```
-Run app
+### 5. Run container app
 ```
 sudo docker run -d -p 18081:8080 --name goapp-multi goapp-multi:1.0
 ```
-Check for running container and try to send request to container
+### 6.Check for running container and try to send request to container
 ```
 sudo docker ps
 curl http://localhost:18081
