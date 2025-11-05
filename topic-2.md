@@ -131,3 +131,37 @@ CONTAINER ID   IMAGE              COMMAND                  CREATED          STAT
 Hello from Docker multi stage build!
 ```
 
+## III. Docker hub image management
+### 1. Create account on docker hub
+### 2. Login at CLI with OTP
+```
+sudo docker login
+```
+or using username/password
+```
+sudo docker login -u <username>
+```
+### 3. Create image repo on docker hub <>
+- Refer: https://docs.docker.com/docker-hub/repos/create/
+- Create a repo named `goapp-multi`
+### 4. Tag built image
+```
+sudo docker tag goapp-multi:1.0 <account>/goapp-multi:1.0
+```
+### 5. Push image to container repo
+```
+sudo docker push <account>/goapp-multi:1.0
+```
+- Sample output:
+```
+The push refers to repository [docker.io/<account>/goapp-multi]
+0080306a8751: Pushed 
+fca748f05368: Pushed 
+abfcb263a588: Pushed 
+1.0: digest: sha256:d85667f05c1218716991ca2d91f1c97ed8fe9fd6cb60c3132b29c72ea00d4d2a size: 945
+```
+
+
+
+
+
