@@ -1,8 +1,7 @@
 # Topic 3 - Docker compose
-
-## 1. Create `docker-compose.yml` file
+## I. Basic docker compose deployment
+### 1. Create `docker-compose.yml` file
 ```
-version: "3.9"
 services:
   web:
     image: nginx
@@ -28,11 +27,11 @@ networks:
   appnet:
 ```
 
-## 2. Deploy docker compose stack
+### 2. Deploy docker compose stack
 ```
 sudo docker compose up -d
 ```
-## 3. Check docker compose container status
+### 3. Check docker compose container status
 ```
 sudo docker compose ps
 ```
@@ -43,7 +42,7 @@ compose-db-1      mysql     "docker-entrypoint.s…"   db        33 seconds ago 
 compose-redis-1   redis     "docker-entrypoint.s…"   redis     33 seconds ago   Up 33 seconds   6379/tcp
 compose-web-1     nginx     "/docker-entrypoint.…"   web       33 seconds ago   Up 33 seconds   0.0.0.0:8085->80/tcp, [::]:8085->80/tcp
 ```
-## 4. Check docker compose container logs
+### 4. Check docker compose container logs
 ```
 sudo docker compose logs
 ```
@@ -67,7 +66,7 @@ redis-1  | 1:C 04 Nov 2025 18:32:04.517 # WARNING Memory overcommit must be enab
 redis-1  | 1:C 04 Nov 2025 18:32:04.517 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
 ```
 
-## 5. Check connection between compose's container
+### 5. Check connection between compose's container
 Execute curl from `web` container to `redis` container on port 6379.
 ```
 sudo docker compose exec -t web curl -vvv redis:6379
@@ -82,7 +81,7 @@ sudo docker compose exec -t web curl -vvv redis:6379
 18:37:50.459670 [0-0] == Info:   Trying 172.18.0.2:6379...
 ...
 ```
-## 6. Cleanup
+### 6. Cleanup
 ```
 sudo docker compose down
 ```
@@ -93,4 +92,89 @@ sudo docker compose down
  ✔ Container compose-db-1     Removed                                                                                                                                                                                                                                  0.6s 
  ✔ Container compose-web-1    Removed                                                                                                                                                                                                                                  0.2s 
  ✔ Network compose_appnet     Removed   
+```
+
+## II. Docker compose deployment with Dockerfile and env file
+### 1. Prepare source code, `Dockerfile` and `.env` file
+- Source code: `main.go`
+```
+package main
+import (
+  "fmt"
+  "net/http"
+)
+func handler(w http.ResponseWriter, r *http.Request) {
+  fmt.Fprintln(w, "Hello from Docker!")
+}
+func main() {
+  http.HandleFunc("/", handler)
+  http.ListenAndServe(":8080", nil)
+}
+```
+- `Dockerfile` file
+```
+# Stage 1: build
+FROM golang:1.22-alpine AS builder
+WORKDIR /app
+COPY main.go .
+RUN go mod init example.com/goapp
+RUN go build -o server .
+
+# Stage 2: minimal runtime
+FROM alpine:3.20
+WORKDIR /app
+COPY --from=builder /app/server .
+EXPOSE 8080
+ENTRYPOINT ["./server"]
+```
+- `.env` file
+```
+APP_PORT=19080
+```
+### 2. Prepare `docker-compose.yml` file
+- `docker-compose.yml`
+```
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: myapp
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:8080"
+    restart: unless-stopped
+    networks:
+      - appnet
+  redis:
+    image: redis
+    networks:
+      - appnet
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - appnet
+volumes:
+  dbdata:
+networks:
+  appnet:
+```
+### 3. Run and build docker container at deployment
+```
+docker compose up --build
+```
+### 4. Check for container status, logs
+Reference to I.3, I.4
+```
+sudo docker compose ps
+sudo docker compose logs
+```
+### 5. Cleanup
+```
+sudo docker compose down
 ```
