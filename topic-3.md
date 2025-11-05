@@ -166,7 +166,7 @@ networks:
 ```
 ### 3. Run and build docker container at deployment
 ```
-docker compose up --build
+sudo docker compose up --build -d
 ```
 ### 4. Check for container status, logs
 Reference to I.3, I.4
