@@ -21,6 +21,11 @@ cat /tmp/test.txt
 ## file not found
 ```
 
+### 4. Cleanup
+```
+docker rm -f temp-container2
+```
+
 ## II. Using Docker Volumes
 ### 1. Create a volume
 ```
@@ -46,6 +51,11 @@ docker rm -f volume-test
 ### 5. Run new container with same volume
 ```
 docker run -it -v mydata:/data ubuntu cat /data/file.txt
+```
+
+### 4. Cleanup
+```
+docker rm -f ubuntu
 ```
 
 ## III. Using Bind Mounts
@@ -94,4 +104,9 @@ exit
 docker start -ai tmpfs-test
 ## run inside container
 cat /tmp/data/cache.txt
+```
+
+### 4. Cleanup
+```
+docker rm -f tmpfs-test
 ```
