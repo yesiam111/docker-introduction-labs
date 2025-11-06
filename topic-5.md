@@ -103,11 +103,12 @@ docker run -d --name int-web --network internal-net nginx:alpine
 ### 3. Test outbound failure
 ```
 docker exec int-web wget -qO- http://example.com
-# (should fail)
+# should fail
 ```
 ### 4. Test internal DNS
 ```
 docker run --rm --network internal-net alpine ping -c2 int-web
+# success
 ```
 ### 5. Cleanup
 ```
