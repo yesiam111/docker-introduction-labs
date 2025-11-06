@@ -30,6 +30,10 @@ docker exec n1 hostname
 docker exec n2 hostname
 ```
 
+### 5. Cleanup
+```
+docker rm -f n1 n2
+```
 ## II. Control Groups (cgroups) Resource Limiting
 
 ### 1. Run a container limited to 1 CPU core, 128 MB RAM:
@@ -55,6 +59,11 @@ cid=$(docker inspect -f '{{ .Id }}' limitdemo)
 ls /sys/fs/cgroup/system.slice/docker-${cid}.scope/
 cat /sys/fs/cgroup/system.slice/docker-${cid}.scope/memory.max
 cat /sys/fs/cgroup/system.slice/docker-${cid}.scope/cpu.max
+```
+
+### 4. Cleanup
+```
+docker rm -f limitdemo
 ```
 
 ## III. Least Privilege and Capability Hardening
@@ -86,6 +95,11 @@ mknod /dev/test-b c 1 5
 ```
 
 Works only if capability explicitly added.
+
+### 4. Cleanup
+```
+docker rm -f privtest
+```
 
 ## IV. Image Vulnerability Scanning with Trivy
 ### 1. Install Trivy:
