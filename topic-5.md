@@ -88,3 +88,63 @@ docker exec none1 ping -c2 8.8.8.8
 ```
 docker rm -f none1
 ```
+
+## V. Internal network (no external access)
+### 1. Create internal network
+```
+docker network create --internal internal-net
+```
+### 2. Start web app
+```
+docker run -d --name int-web --network internal-net nginx:alpine
+```
+
+### 3. Test outbound failure
+```
+docker exec int-web wget -qO- http://example.com
+# (should fail)
+```
+### 4. Test internal DNS
+```
+docker run --rm --network internal-net alpine ping -c2 int-web
+```
+### 5. Cleanup
+```
+docker rm -f int-web
+docker network rm internal-net
+```
+
+## VI. MACVLAN network
+### 1. Identify host interface
+```
+ip -4 addr
+```
+
+### 2. Create macvlan
+```
+docker network create -d macvlan \
+--subnet=192.168.2.0/24 \
+--gateway=192.168.2.1 \
+-o parent=eth0 macvlan-net
+```
+
+### 3. Create MACVLAN interface
+```
+ip link add macvlan-host link eth0 type macvlan mode bridge
+ip addr add 192.168.2.200/24 dev macvlan-host
+ip link set macvlan-host up
+```
+
+### 3. Run container
+```
+docker run -d --name mac1 --network macvlan-net --ip 192.168.2.250 alpine sleep 2000
+```
+
+### 4. Ping from LAN device to 192.168.2.250
+
+### 5.Cleanup
+```
+docker rm -f mac1
+docker network rm macvlan-net
+ip link del macvlan-host
+```
