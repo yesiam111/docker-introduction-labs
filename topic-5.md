@@ -18,6 +18,7 @@ docker run -d --name n2 alpine sleep 2000
 docker exec n1 ip a
 n2_ip=$(docker inspect -f '{{ .NetworkSettings.IPAddress }}' n2)
 sudo docker exec n1 ping -c2 ${n2_ip}
+## ping success
 ```
 
 ## 4. Remove containers
