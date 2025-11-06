@@ -62,6 +62,11 @@ CONTAINER ID   IMAGE              COMMAND                  CREATED          STAT
 
 Hello from Docker single stage build!
 ```
+
+### 7. Cleanup
+```
+docker rm -f goapp-single
+```
 ## II. Multi stage container build
 ### 1. Create single state dockerfile & build image
 Prepare directory and sample source code
@@ -130,7 +135,10 @@ CONTAINER ID   IMAGE              COMMAND                  CREATED          STAT
 
 Hello from Docker multi stage build!
 ```
-
+### 7. Cleanup
+```
+docker rm -f goapp-multi
+```
 ## III. Docker hub image management
 ### 1. Create account on docker hub
 ### 2. Login at CLI with OTP
