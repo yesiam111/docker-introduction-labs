@@ -144,9 +144,39 @@ docker run -d --name mac1 --network macvlan-net --ip 192.168.2.250 alpine sleep 
 
 ### 4. Ping from LAN device to 192.168.2.250
 
-### 5.Cleanup
+### 5. Cleanup
 ```
 docker rm -f mac1
 docker network rm macvlan-net
 ip link del macvlan-host
+```
+
+## V. IPVLAN network
+
+### 1. Identify host interface
+```
+ip -4 addr
+```
+
+### 2. Create ipvlan network
+```
+## same subnet as physical
+docker network create -d ipvlan \
+    --subnet=192.168.1.0/24 \
+    --gateway=192.168.1.1 \
+    -o ipvlan_mode=l2 \
+    -o parent=eth0 ipvlan_net
+```
+
+### 3. Run container
+```
+docker run -d --name ip1 --network macvlan-net --ip 192.168.1.250 alpine sleep 2000
+
+```
+### 4. Ping from LAN device to 192.168.1.250
+
+### 5. Cleanup
+```
+docker rm -f ip1
+docker network rm ipvlan-net
 ```
