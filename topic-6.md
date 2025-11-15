@@ -53,6 +53,12 @@ Observe container throttling or OOM termination.
 tail /var/log/syslog -f
 ```
 
+** Install rsyslog
+```
+sudo apt install rsyslog -y
+sudo systemctl enable --now rsyslog
+```
+
 ### 3. View cgroup info from host:
 ```
 cid=$(docker inspect -f '{{ .Id }}' limitdemo)
