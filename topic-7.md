@@ -110,3 +110,49 @@ cat /tmp/data/cache.txt
 ```
 docker rm -f tmpfs-test
 ```
+
+## V. Using Bind mount with quota
+Extra and optional lab. Change disk/partition when running command
+
+### 1. Prepare disk and mount with quota
+```
+mkfs.xfs /dev/sdb
+mkdir /data
+mount -o pquota /dev/sdb /data
+mkdir /data/vol1
+```
+
+### 2. Create quota
+```
+echo "100:/data/vol1" >> /etc/projects
+echo "vol1:100" >> /etc/projid
+xfs_quota -x -c 'project -s vol1' /data
+xfs_quota -x -c 'limit -p bsoft=1g bhard=1g vol1' /data
+```
+
+### 3. Create container
+```
+docker run -d --name test-quota -v /data/vol1:/data ubuntu sleep 10000
+```
+
+### 4. Test volume
+```
+docker exec -it test-quota /bin/bash
+## inside container
+df -h
+```
+
+- Sample output
+```
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          37G  7.0G   30G  19% /
+tmpfs            64M     0   64M   0% /dev
+shm              64M     0   64M   0% /dev/shm
+/dev/sdb        1.0G     0  1.0G   0% /data
+......
+```
+
+### 5. Cleanup
+```
+docker rm -f test-quota
+```
